@@ -218,7 +218,34 @@ What's wrong with the `lateStatement` assignment and how would you fix it?
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-Adam's answers will be here.
+**Answer 1: Data Types and Date Handling**
+- `actualShipDate` dtype is datetime64. 
+- It is important for `actualShipDate` and `plannedShipDate` to have the same data type to accuratly compare and avoid a type error.
+- Finding dtype using code:
+    ```python
+    shipments_with_lateness['actualShipDate'].dtype
+    ```
+**Answer 2: String vs Date Comparison**
+- When using minus and multiply opperators this type of opperation would result in a type error.
+- When using comparators like < and > on string values the outcome is still true or false.
+- The issue with that is python will compare the oridinal value of each string which will not give you accurate results.
+
+**Answer 3: Debug This Code**
+- key Error on `is_late` get must happen after first assign finishes.
+**fix
+```python
+shipments_with_lateness = (
+    shipments_df
+    .assign(
+        is_late=lambda df: df['actualShipDate'] > df['plannedShipDate'],
+        days_late=lambda df: (df['actualShipDate'] - df['plannedShipDate']).dt.days,
+    )
+    .assign(
+        lateStatement=lambda df: np.where(df['is_late'], "Darn Shipment is Late", "Shipment is on Time")
+    )
+)
+# assign lateStatement after is_late has been assigned
+```
 
 ### 2. Subset: Querying Rows and Filtering Columns
 
@@ -263,7 +290,20 @@ print(late_shipments.head())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Query vs Boolean Indexing**
+- Query allows you to filter data frames in a similar way one would filter a database table using sql.
+- Boolean indexing on the other hand uses data frame specific syntax which is less human readable.
+- Using query would allow you to send your work to a collueg lets say and instead of having to interpret anything they could read plainly the intention.
+
+**Answer 2: Additional Row Querying**
+```python
+late_threshold = 5
+late_shipments = (
+    shipments_with_lateness
+    .query('days_late >= @late_threshold') 
+    .filter(['shipID', 'partID', 'plannedShipDate', 'actualShipDate', 'days_late'])  # Filter to keep specific columns
+)
+```
 
 ### 3. Drop: Removing Unwanted Data
 
@@ -301,7 +341,13 @@ print("Remaining columns:", clean_shipments.columns.tolist())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Drop vs Filter Strategies**
+- Drop gets rid of columns while filter filters out columns not in the filter clause.
+- Drop is helpful when you only need to drop a few columns and filter is useful when you only want to keep a few columns.
+
+**Answer 2: Handling Missing Data**
+- Using dropna without specifying a column will drop all rows with a missing value, this could potential render your dataset useless.
+- subset specifies the columns dropna looks at to find missing values. 
 
 ### 4. Sort: Arranging Data
 
@@ -339,7 +385,21 @@ print(sorted_by_lateness[['shipID', 'partID', 'days_late', 'is_late']].head(10))
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Sorting Strategies**
+- `ascending=False` means sort by decending order.
+- `ascending=True` means sort by ascending order.
+```python
+sorted_by_lateness = (
+    clean_shipments
+    .sort_values(['is_late', 'days_late'], ascending=[False, False])  
+    .reset_index(drop=True)
+)
+```
+**Answer 2: Index Management**
+- Use `reset_index` after sorting to reset the indexes in the order of the sort.
+- If `reset_index` is not used after a sort your first row in a sorted df could be 11198.
+- This is problematic when using iloc and loc functions and there could be some performance issues among other issues.
+
 
 ### 5. Aggregate: Summarizing Data
 
@@ -379,7 +439,9 @@ print(f"\nOn-time delivery rate: {on_time_rate:.1f}%")
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Boolean Aggregation**
+- In pandas at least boolean values are seen as 1s and 0s to the computer so you can use int opperators on them.
+- sum() is counting the true values.
 
 ### 6. Merge: Combining Information
 
@@ -418,7 +480,20 @@ print(shipments_with_category['prodCategory'].value_counts())
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Join Types and Data Loss**
+- left joins keeps all rows of `clean_shipments`
+- check df length before and after merge
+```python
+# before merge
+print(f"Number of rows in shipments_with_category: {len(clean_shipments)}")
+
+# after merge
+print(f"Number of rows in shipments_with_category: {len(shipments_with_category)}")
+```
+
+**Answer 2: Key Column Matching**
+- The merge will create all possible matching combinations.
+- So if `partID` is duplicated each row with that `partID` with each shipment with that `partID`
 
 ### 7. Split-Apply-Combine: Group Analysis
 
@@ -458,7 +533,14 @@ print(service_by_category)
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: GroupBy Mechanics**
+- `.groupby('prodCategory')` does exactly what it sounds like, it groups all rows with the same `prodCategory`
+- Using `.agg()` to use multiple aggregate operations on multipe columns.
+- If one were not to use `.agg()` in this instance the code would just return a DataFrameGroupBy. 
+
+**Answer 2: Multi-Level Grouping**
+- This particular grouping shows lateness by product category and `shipID` which will give us which shipments were late with all product categories in that shipment.
+- Which we can then answer questions like 'which product catagory are late and their days late (measuring performance) at the shipment level?' 
 
 ## Answering A Business Question
 
@@ -502,7 +584,12 @@ print(f"Percentage with multiple categories: {multi_category_shipments['shipID']
 
 #### Briefly Give Answers to the Discussion Questions In This Section
 
-> Replace this with your answers to the discussion questions
+**Answer 1: Business Question Analysis**
+- What percentage of our total shipments have multiple categories?
+- Grouping by `prodCategory` gives one a high level overview of shipment analysis.
+- Grouping by `['shipID', 'prodCategory']` gives one a more granular view of our shipent analysis.
+- Without both columns we wouldn't then be able to calculate the percentage of shipments that have multiple categories.
+- Knowing percentage of multi-category shipments can help ZappTech make more accurate shipping costs perdictions, materials needed for each shipment, and help calculate lateness probabilities.
 
 ## Student Analysis Section: Mastering Data Manipulation {#student-analysis-section}
 
