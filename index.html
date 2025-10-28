@@ -390,7 +390,7 @@ First few rows of product line data:
     <li>key Error on <code>is_late</code> get must happen after first assign finishes.</li>
 </ul>
 
-<strong>fix</strong>
+<strong>Fix</strong>
 <pre><code>shipments_with_lateness = (
     shipments_df
     .assign(
@@ -464,7 +464,6 @@ Late shipments sample:
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-1" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-1">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Query vs Boolean Indexing</strong>
 <ul>
     <li>Query allows you to filter data frames in a similar way one would filter a database table using sql.</li>
@@ -479,7 +478,6 @@ late_shipments = (
     .query('days_late >= @late_threshold') 
     .filter(['shipID', 'partID', 'plannedShipDate', 'actualShipDate', 'days_late'])  # Filter to keep specific columns
 )</code></pre>
-</blockquote>
 </section>
 </section>
 <section id="drop-removing-unwanted-data" class="level3">
@@ -517,7 +515,6 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-2" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-2">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Drop vs Filter Strategies</strong>
 <ul>
     <li>Drop gets rid of columns while filter filters out columns not in the filter clause.</li>
@@ -529,7 +526,6 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
     <li>Using dropna without specifying a column will drop all rows with a missing value, this could potential render your dataset useless.</li>
     <li>subset specifies the columns dropna looks at to find missing values.</li>
 </ul>
-</blockquote>
 </section>
 </section>
 <section id="sort-arranging-data" class="level3">
@@ -577,7 +573,6 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-3" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-3">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Sorting Strategies</strong>
 <ul>
     <li><code>ascending=False</code> means sort by decending order.</li>
@@ -595,7 +590,6 @@ Remaining columns: ['shipID', 'plannedShipDate', 'actualShipDate', 'partID', 'is
     <li>If <code>reset_index</code> is not used after a sort your first row in a sorted df could be 11198.</li>
     <li>This is problematic when using iloc and loc functions and there could be some performance issues among other issues.</li>
 </ul>
-</blockquote>
 </section>
 </section>
 <section id="aggregate-summarizing-data" class="level3">
@@ -645,13 +639,11 @@ On-time delivery rate: 88.6%</code></pre>
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-4" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-4">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Boolean Aggregation</strong>
 <ul>
     <li>In pandas at least boolean values are seen as 1s and 0s to the computer so you can use int opperators on them.</li>
     <li><code>sum()</code>  is counting the true values.</li>
 </ul>
-</blockquote>
 </section>
 </section>
 <section id="merge-combining-information" class="level3">
@@ -697,7 +689,6 @@ Name: count, dtype: int64</code></pre>
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-5" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-5">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Join Types and Data Loss</strong>
 <ul>
     <li>left joins keeps all rows of <code>clean_shipments</code></li>
@@ -713,7 +704,6 @@ print(f"Number of rows in shipments_with_category: {len(shipments_with_category)
     <li>The merge will create all possible matching combinations.</li>
     <li>So if <code>partID</code> is duplicated each row with that <code>partID</code> with each shipment with that <code>partID</code></li>
 </ul>
-</blockquote>
 </section>
 </section>
 <section id="split-apply-combine-group-analysis" class="level3">
@@ -761,7 +751,6 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-6" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-6">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: GroupBy Mechanics</strong>
 <ul>
     <li><code>.groupby('prodCategory')</code> does exactly what it sounds like, it groups all rows with the same <code>prodCategory</code></li>
@@ -774,7 +763,6 @@ SpareParts      True   767  137  0.179    -1.003  21</code></pre>
     <li>This particular grouping shows lateness by product category and <code>shipID</code> which will give us which shipments were late with all product categories in that shipment.</li>
     <li>Which we can then answer questions like 'which product catagory are late and their days late (measuring performance) at the shipment level?'</li>
 </ul>
-</blockquote>
 </section>
 </section>
 </section>
@@ -824,7 +812,6 @@ Percentage with multiple categories: 23.3%</code></pre>
 </div>
 <section id="briefly-give-answers-to-the-discussion-questions-in-this-section-7" class="level4">
 <h4 class="anchored" data-anchor-id="briefly-give-answers-to-the-discussion-questions-in-this-section-7">Briefly Give Answers to the Discussion Questions In This Section</h4>
-<blockquote class="blockquote">
 <strong>Answer 1: Business Question Analysis</strong>
 <ul>
     <li>What percentage of our total shipments have multiple categories?</li>
@@ -833,7 +820,6 @@ Percentage with multiple categories: 23.3%</code></pre>
     <li>Without both columns we wouldn't then be able to calculate the percentage of shipments that have multiple categories.</li>
     <li>Knowing percentage of multi-category shipments can help ZappTech make more accurate shipping costs perdictions, materials needed for each shipment, and help calculate lateness probabilities.</li>
 </ul>
-</blockquote>
 </section>
 </section>
 <section id="student-analysis-section" class="level2">
